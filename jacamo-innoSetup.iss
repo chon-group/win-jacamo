@@ -31,7 +31,7 @@ LicenseFile=C:\win-jacamo\LICENSE.txt
 ; Remove the following line to run in administrative install mode (install for all users.)
 PrivilegesRequired=lowest
 OutputDir=C:\win-jacamo\output
-OutputBaseFilename=jacamo-installer
+OutputBaseFilename=jacamo-cli-{#MyAppVersion}
 SetupIconFile=C:\win-jacamo\app\jacamo.ico
 Compression=lzma
 SolidCompression=yes
