@@ -2,7 +2,7 @@
 ; SEE THE DOCUMENTATION FOR DETAILS ON CREATING INNO SETUP SCRIPT FILES!
 
 #define MyAppName "JaCaMo"
-#define MyAppVersion "1.3.0"
+#define MyAppVersion "1.3.0-241224"
 #define MyAppPublisher "JaCaMo Project"
 #define MyAppURL "https://jacamo-lang.github.io/"
 #define MyAppExeName "jacamo.exe"
@@ -15,38 +15,36 @@
 ; (To generate a new GUID, click Tools | Generate GUID inside the IDE.)
 AppId={{84F317FD-EBD3-4985-93DE-792EF7DB2148}
 AppName={#MyAppName}
-AppVersion={#MyAppVersion}
-;AppVerName={#MyAppName} {#MyAppVersion}
+;AppVersion={#MyAppVersion}
+AppVerName={#MyAppName} {#MyAppVersion}
 AppPublisher={#MyAppPublisher}
 AppPublisherURL={#MyAppURL}
 AppSupportURL={#MyAppURL}
 AppUpdatesURL={#MyAppURL}
-DefaultDirName=%USERPROFILE%\jacamo
+DefaultDirName={userappdata}\jacamo
 DisableDirPage=yes
+DisableProgramGroupPage=yes
+ChangesEnvironment=yes
 ChangesAssociations=yes
 DefaultGroupName={#MyAppName}
-LicenseFile=C:\Users\nilso\Downloads\jdk-21_windows-x64_bin\LICENSE.txt
+LicenseFile=C:\win-jacamo\LICENSE.txt
 ; Remove the following line to run in administrative install mode (install for all users.)
 PrivilegesRequired=lowest
-OutputDir=C:\Users\nilso\Downloads\jdk-21_windows-x64_bin
-OutputBaseFilename=mysetup
-SetupIconFile=C:\Users\nilso\Downloads\jdk-21_windows-x64_bin\jacamo-book-cover.ico
+OutputDir=C:\win-jacamo\output
+OutputBaseFilename=jacamo-installer
+SetupIconFile=C:\win-jacamo\app\jacamo.ico
 Compression=lzma
 SolidCompression=yes
 WizardStyle=modern
 
 [Languages]
 Name: "english"; MessagesFile: "compiler:Default.isl"
-Name: "brazilianportuguese"; MessagesFile: "compiler:Languages\BrazilianPortuguese.isl"
 
-[Tasks]
-Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{cm:AdditionalIcons}"; Flags: unchecked
+;[Tasks]
+;Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{cm:AdditionalIcons}"; Flags: unchecked
 
 [Files]
-Source: "C:\Users\nilso\Downloads\jdk-21_windows-x64_bin\{#MyAppExeName}"; DestDir: "{app}"; Flags: ignoreversion
-Source: "C:\Users\nilso\Downloads\jdk-21_windows-x64_bin\jdk-21.0.5\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs createallsubdirs
-Source: "C:\Users\nilso\Downloads\jdk-21_windows-x64_bin\jacamo.exe"; DestDir: "{app}"; Flags: ignoreversion
-Source: "C:\Users\nilso\Downloads\jdk-21_windows-x64_bin\jacamo-cli-all-1.3.0.jar"; DestDir: "{app}"; Flags: ignoreversion
+Source: "C:\win-jacamo\app\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs createallsubdirs
 ; NOTE: Don't use "Flags: ignoreversion" on any shared system files
 
 [Registry]
@@ -55,13 +53,29 @@ Root: HKA; Subkey: "Software\Classes\{#MyAppAssocKey}"; ValueType: string; Value
 Root: HKA; Subkey: "Software\Classes\{#MyAppAssocKey}\DefaultIcon"; ValueType: string; ValueName: ""; ValueData: "{app}\{#MyAppExeName},0"
 Root: HKA; Subkey: "Software\Classes\{#MyAppAssocKey}\shell\open\command"; ValueType: string; ValueName: ""; ValueData: """{app}\{#MyAppExeName}"" ""%1"""
 Root: HKA; Subkey: "Software\Classes\Applications\{#MyAppExeName}\SupportedTypes"; ValueType: string; ValueName: ".myp"; ValueData: ""
+Root: HKCU; Subkey: "Environment"; ValueType: expandsz; ValueName: "Path"; ValueData: "{app};{olddata}"; Check: NeedsAddPath('jacamo')
+
 
 [Icons]
 Name: "{group}\{#MyAppName}"; Filename: "{app}\{#MyAppExeName}"
 Name: "{group}\{cm:ProgramOnTheWeb,{#MyAppName}}"; Filename: "{#MyAppURL}"
 Name: "{group}\{cm:UninstallProgram,{#MyAppName}}"; Filename: "{uninstallexe}"
-Name: "{autodesktop}\{#MyAppName}"; Filename: "{app}\{#MyAppExeName}"; Tasks: desktopicon
+Name: "{autodesktop}\{#MyAppName}"; Filename: "{app}\{#MyAppExeName}"; 
+;Tasks: desktopicon
 
-[Run]
-Filename: "{app}\{#MyAppExeName}"; Description: "{cm:LaunchProgram,{#StringChange(MyAppName, '&', '&&')}}"; Flags: nowait postinstall skipifsilent
+;[Run]
+;Filename: "{app}\{#MyAppExeName}"; Description: "{cm:LaunchProgram,{#StringChange(MyAppName, '&', '&&')}}"; Flags: nowait postinstall skipifsilent
+
+[Code]
+function NeedsAddPath(Param: string): boolean;
+var
+  OrigPath: string;
+begin
+  RegQueryStringValue(HKEY_CURRENT_USER, 'Environment', 'Path', OrigPath);
+  Log('Searching in PATH: ' + Param);
+  Log('Current PATH: ' + OrigPath);
+  Result := Pos(Param, OrigPath) = 0;
+end;
+
+
 
